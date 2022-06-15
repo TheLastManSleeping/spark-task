@@ -18,7 +18,20 @@ category = spark.createDataFrame(pd.read_sql('select * from category', engine))
 film_category = spark.createDataFrame(pd.read_sql('select * from film_category', engine))
 film_actor = spark.createDataFrame(pd.read_sql('select * from film_actor', engine))
 actor = spark.createDataFrame(pd.read_sql('select * from actor', engine))
-schema = StructType([StructField("film_id",IntegerType(), True), StructField("title", StringType(), True), StructField("description", StringType(), True), StructField("release_year", IntegerType(), True), StructField("language_id", IntegerType(), True), StructField("original_language_id", IntegerType(), True), StructField("rental_duration", IntegerType(), True), StructField("rental_rate", FloatType(), True), StructField("length", IntegerType(), True), StructField("replacement_cost", FloatType(), True), StructField("rating", StringType(), True), StructField("last_update", TimestampType(), True), StructField("special_features", StringType(), True), StructField("fulltext", StringType(), True)])
+schema = StructType([StructField("film_id",IntegerType(), True), 
+                     StructField("title", StringType(), True), 
+                     StructField("description", StringType(), True), 
+                     StructField("release_year", IntegerType(), True), 
+                     StructField("language_id", IntegerType(), True), 
+                     StructField("original_language_id", IntegerType(), True), 
+                     StructField("rental_duration", IntegerType(), True), 
+                     StructField("rental_rate", FloatType(), True), 
+                     StructField("length", IntegerType(), True), 
+                     StructField("replacement_cost", FloatType(), True), 
+                     StructField("rating", StringType(), True), 
+                     StructField("last_update", TimestampType(), True), 
+                     StructField("special_features", StringType(), True), 
+                     StructField("fulltext", StringType(), True)])
 film = spark.createDataFrame(pd.read_sql('select * from film', engine), schema=schema)
 rental = spark.createDataFrame(pd.read_sql('select * from rental', engine))
 inventory = spark.createDataFrame(pd.read_sql('select * from inventory', engine))
