@@ -1,31 +1,30 @@
-from sqlite3 import OperationalError
-
-import psycopg2
-import pandas as pd
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as ps
-from pyspark.sql.types import StructType, StructField, NumericType, IntegerType, StringType, TimestampType, FloatType
-from sqlalchemy import create_engine
 from pyspark.sql.window import Window
 
 appName = "task"
 master = "local"
 
-spark = SparkSession.builder.master(master).appName(appName).getOrCreate()
-engine = create_engine(
-    "postgresql+psycopg2://postgres:secret@localhost/pag?client_encoding=utf8")
-category = spark.createDataFrame(pd.read_sql('select * from category', engine))
-film_category = spark.createDataFrame(pd.read_sql('select * from film_category', engine))
-film_actor = spark.createDataFrame(pd.read_sql('select * from film_actor', engine))
-actor = spark.createDataFrame(pd.read_sql('select * from actor', engine))
-schema = StructType([StructField("film_id",IntegerType(), True), StructField("title", StringType(), True), StructField("description", StringType(), True), StructField("release_year", IntegerType(), True), StructField("language_id", IntegerType(), True), StructField("original_language_id", IntegerType(), True), StructField("rental_duration", IntegerType(), True), StructField("rental_rate", FloatType(), True), StructField("length", IntegerType(), True), StructField("replacement_cost", FloatType(), True), StructField("rating", StringType(), True), StructField("last_update", TimestampType(), True), StructField("special_features", StringType(), True), StructField("fulltext", StringType(), True)])
-film = spark.createDataFrame(pd.read_sql('select * from film', engine), schema=schema)
-rental = spark.createDataFrame(pd.read_sql('select * from rental', engine))
-inventory = spark.createDataFrame(pd.read_sql('select * from inventory', engine))
-payment = spark.createDataFrame(pd.read_sql('select * from payment', engine))
-address = spark.createDataFrame(pd.read_sql('select * from address', engine))
-city = spark.createDataFrame(pd.read_sql('select * from city', engine))
-customer = spark.createDataFrame(pd.read_sql('select * from customer', engine))
+spark = SparkSession.builder.config('spark.jars', '/home/oem/Загрузки/postgresql-42.4.0.jar')\
+    .master(master).appName(appName).getOrCreate()
+
+config_val = spark.read.format("jdbc")\
+    .option("url", "jdbc:postgresql://localhost:5432/pag") \
+    .option("driver", "org.postgresql.Driver")\
+    .option("user", "postgres")\
+    .option("password", "secret")\
+
+category = config_val.option("dbtable", "category").load()
+film_category = config_val.option("dbtable", "film_category").load()
+film_actor = config_val.option("dbtable", "film_actor").load()
+actor = config_val.option("dbtable", "actor").load()
+film = config_val.option("dbtable", "film").load()
+rental = config_val.option("dbtable", "rental").load()
+inventory = config_val.option("dbtable", "inventory").load()
+payment = config_val.option("dbtable", "payment").load()
+address = config_val.option("dbtable", "address").load()
+city = config_val.option("dbtable", "city").load()
+customer = config_val.option("dbtable", "customer").load()
 
 # 1
 data = category.join(film_category, category.category_id == film_category.category_id, "inner")
