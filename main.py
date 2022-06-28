@@ -26,6 +26,7 @@ address = config_val.option("dbtable", "address").load()
 city = config_val.option("dbtable", "city").load()
 customer = config_val.option("dbtable", "customer").load()
 
+
 # 1
 data = category.join(film_category, category.category_id == film_category.category_id, "inner")
 data.groupBy("name").agg(ps.count("*").alias("films")).orderBy('films', ascending=False).show()
